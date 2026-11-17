@@ -1,0 +1,13 @@
+vlans:
+  - vlan_id: 10
+    name: "Phong_Dao_Tao"
+    gateway: "192.168.10.1/24"
+  - vlan_id: 20
+    name: "Phong_Ke_Toan"
+    gateway: "192.168.20.1/24"
+  - vlan_id: 30
+    name: "Phong_Quan_Tri"
+    gateway: "192.168.30.1/24"
+  - vlan_id: 40
+    name: "Phong_IT"
+    gateway: "192.168.40.1/24"

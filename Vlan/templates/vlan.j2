@@ -1,0 +1,27 @@
+{% if device_type == 'cisco_ios' %}
+{% for v in vlans %}
+vlan {{ v.vlan_id }}
+ name {{ v.name }}
+{% endfor %}
+{% if port_cfg %}
+{% for trunk in port_cfg.trunk_ports %}
+interface {{ trunk }}
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+ no shutdown
+{% endfor %}
+{% for acc in port_cfg.access_ports %}
+interface {{ acc.interface }}
+ switchport mode access
+ switchport access vlan {{ acc.vlan }}
+ no shutdown
+{% endfor %}
+{% endif %}
+{% elif device_type == 'mikrotik_routeros' %}
+{% set trunk_if = port_cfg.trunk_ports[0] if (port_cfg and port_cfg.trunk_ports) else 'ether1' %}
+{% for v in vlans %}
+/interface vlan add interface={{ trunk_if }} name={{ v.name }} vlan-id={{ v.vlan_id }} disabled=no
+/ip address add address={{ v.gateway }} interface={{ v.name }}
+{% endfor %}
+{% endif %}

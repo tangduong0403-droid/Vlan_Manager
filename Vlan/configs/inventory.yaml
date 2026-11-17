@@ -1,0 +1,20 @@
+switches:
+  - name: "SW1"
+    ip: "192.168.239.11"
+    device_type: "cisco_ios"
+    env_prefix: "SW1"
+
+  - name: "SW2"
+    ip: "192.168.239.12"
+    device_type: "cisco_ios"
+    env_prefix: "SW2"
+
+  - name: "SW3"
+    ip: "192.168.239.13"
+    device_type: "cisco_ios"
+    env_prefix: "SW3"
+
+  - name: "R1"
+    ip: "192.168.239.14"
+    device_type: "mikrotik_routeros"
+    env_prefix: "R1"
