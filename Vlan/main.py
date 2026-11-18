@@ -1,3 +1,4 @@
+from modules.validator import validate_yaml_files
 from dotenv import load_dotenv
 from core.deployment_manager import DeploymentManager
 
@@ -26,7 +27,9 @@ def main():
     while True:
         print_menu()
         choice = input("Select an option: ").strip()
-
+        if choice in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+            if not validate_yaml_files():
+                continue
         if choice == "1":
             manager.execute_deploy()
         elif choice == "2":
