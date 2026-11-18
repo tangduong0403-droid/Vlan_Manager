@@ -140,13 +140,46 @@ Chức năng 6 chỉ kiểm tra và báo cáo kết quả, không tự sửa cá
 
 ```text
 Vlan/
-├── main.py                  # Điểm vào và menu CLI
-├── requirements.txt         # Các thư viện Python
-├── configs/                 # Inventory, VLAN, cổng và quy tắc compliance
-├── core/                    # Quản lý kết nối và điều phối
-├── devices/                 # Tích hợp Cisco IOS và MikroTik RouterOS
-├── modules/                 # Deploy, backup, diff, rollback, compliance, báo cáo
-├── templates/vlan.j2        # Template lệnh cấu hình
-├── backups/                 # Bản sao lưu cấu hình thiết bị
-└── reports/                 # Báo cáo CSV
+├── main.py
+├── requirements.txt
+├── README.md
+├── configs/
+│   ├── inventory.yaml
+│   ├── vlans.yaml
+│   ├── ports.yaml
+│   └── compliance_rules.yaml
+├── core/
+│   ├── connection_manager.py
+│   ├── deployment_manager.py
+│   └── network_device.py
+├── devices/
+│   ├── cisco_ios.py
+│   └── mikrotik.py
+├── modules/
+│   ├── deployer.py
+│   ├── backup.py
+│   ├── diff.py
+│   ├── rollback.py
+│   ├── compliance.py
+│   └── reporter.py
+├── templates/
+│   └── vlan.j2
+├── backups/
+│   ├── SW1/
+│   ├── SW2/
+│   ├── SW3/
+│   └── R1/
+└── reports/
 ```
+
+### Vai trò từng thành phần
+
+- `main.py`: khởi chạy ứng dụng, nạp biến môi trường và hiển thị menu tương tác.
+- `requirements.txt`: danh sách thư viện Python cần cài để chạy ứng dụng.
+- `configs/`: cấu hình đầu vào dạng YAML. `inventory.yaml` khai báo thiết bị; `vlans.yaml` khai báo VLAN và gateway; `ports.yaml` ánh xạ VLAN vào cổng trunk/access; `compliance_rules.yaml` chứa các tiêu chí kiểm tra.
+- `core/`: phần dùng chung của ứng dụng. `connection_manager.py` tạo đối tượng thiết bị và quản lý kết nối SSH; `network_device.py` định nghĩa giao diện chung cho thiết bị mạng; `deployment_manager.py` nạp cấu hình và điều phối các chức năng.
+- `devices/`: triển khai hành vi riêng theo nền tảng. `cisco_ios.py` xử lý lệnh và kiểm tra trên Cisco IOS; `mikrotik.py` xử lý lệnh và kiểm tra trên MikroTik RouterOS.
+- `modules/`: các tác vụ được điều phối bởi `DeploymentManager`: `deployer.py` tạo và triển khai cấu hình; `backup.py` sao lưu; `diff.py` so sánh bản sao lưu; `rollback.py` khôi phục cấu hình; `compliance.py` kiểm tra quy tắc; `reporter.py` xuất báo cáo CSV.
+- `templates/vlan.j2`: template Jinja2 sinh lệnh VLAN, trunk/access cho Cisco IOS và MikroTik RouterOS.
+- `backups/<ten_thiet_bi>/`: nơi lưu các bản cấu hình được lấy từ thiết bị, bao gồm snapshot trước khi triển khai.
+- `reports/`: nơi lưu các báo cáo CSV được xuất từ chương trình.
