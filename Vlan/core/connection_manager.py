@@ -1,8 +1,23 @@
 import os
 import time
+import logging
+import paramiko
 from netmiko import ConnectHandler
 from devices.cisco_ios import CiscoIOSDevice
 from devices.mikrotik import MikroTikDevice
+
+logging.getLogger("paramiko").setLevel(logging.CRITICAL)
+
+paramiko.Transport._preferred_kex = tuple(
+    dict.fromkeys(
+        paramiko.Transport._preferred_kex
+        + (
+            "diffie-hellman-group14-sha1",
+            "diffie-hellman-group-exchange-sha1",
+            "diffie-hellman-group1-sha1",
+        )
+    )
+)
 
 
 class ConnectionManager:
@@ -45,7 +60,7 @@ class ConnectionManager:
                 device.connection = conn
                 return True, "SUCCESS"
             except Exception as e:
-                last_err = str(e)
+                last_err = str(e).splitlines()[0] if str(e) else "Unknown SSH Error"
                 if attempt < retries:
                     time.sleep(delay)
         device.connection = None

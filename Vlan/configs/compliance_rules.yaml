@@ -2,7 +2,7 @@ rules:
   require_ssh: true
   forbid_telnet: true
   required_vlans: [10, 20, 30, 40]
-  approved_trunk_vlans: "10,20,30,40"
+  approved_trunk_vlans: "1,10,20,30,40"
   forbidden_passwords:
     - "cisco"
     - "123456"
