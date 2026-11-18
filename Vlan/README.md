@@ -1,47 +1,44 @@
-# VLAN Manager
+# Campus VLAN Automation
 
-Ứng dụng CLI tự động hóa cấu hình VLAN qua SSH cho thiết bị Cisco IOS và MikroTik RouterOS. Dự án được thiết kế để chạy trong phòng lab; hãy kiểm tra cấu hình và xác nhận bạn có quyền quản trị thiết bị trước khi triển khai.
+Ứng dụng web chạy cục bộ để quản lý cấu hình VLAN, cổng Access/Trunk và tự động hóa các thiết bị Cisco IOS, MikroTik RouterOS qua SSH. Giao diện được xây dựng bằng Flask, phù hợp cho môi trường lab như EVE-NG.
 
-## Chức năng
+> **Cảnh báo:** Đây là công cụ lab, không phải dịch vụ triển khai production. Chỉ chạy trên máy đáng tin cậy, không mở máy chủ ra mạng công cộng. Kiểm tra kỹ cấu hình và thiết bị đích trước khi triển khai.
 
-- Triển khai cấu hình VLAN đồng thời trên các thiết bị trong inventory.
-- Sao lưu cấu hình đang chạy; tự tạo bản sao lưu trước mỗi lần triển khai.
-- Xem trước lệnh cấu hình bằng chế độ dry-run.
-- So sánh hai bản sao lưu bằng unified diff.
-- Khôi phục cấu hình từ một bản sao lưu.
-- Kiểm tra một số tiêu chí compliance: SSH, Telnet, VLAN bắt buộc, trunk và mật khẩu mặc định.
-- Kiểm tra khả năng kết nối SSH đến thiết bị.
-- Xuất báo cáo trạng thái dưới dạng CSV.
+## Chức năng trên giao diện web
 
-> **Lưu ý:** Dry-run ban đầu chỉ in các lệnh dự kiến, nhưng sau đó ứng dụng hỏi có triển khai thật ngay hay không. Chỉ nhập `y` nếu bạn muốn áp dụng cấu hình.
+- **Tổng quan & Thiết bị:** xem, thêm, sửa, xóa thiết bị trong inventory.
+- **Quy hoạch VLAN:** thêm/xóa VLAN và khai báo gateway CIDR.
+- **Cổng Access / Trunk:** gán hoặc gỡ cổng trên từng thiết bị.
+- **Tự động hóa & Kiểm tra lỗi:** kiểm tra các file YAML, xem trước lệnh (dry-run), sao lưu cấu hình, triển khai đồng thời và kiểm tra kết nối SSH.
+- **Bản sao lưu:** xem tối đa 25 file cấu hình sao lưu.
+- Tự động sao lưu cấu hình trước mỗi lần triển khai; nếu triển khai thất bại, chương trình thử khôi phục từ snapshot trước triển khai.
+
+Giao diện web không cung cấp thao tác so sánh bản sao lưu, rollback thủ công, kiểm tra compliance hoặc xuất báo cáo. Các thao tác này vẫn có trong menu CLI (`python main.py`).
+
+> **Lưu ý về dry-run:** thao tác này in các lệnh dự kiến rồi hỏi xác nhận trong terminal đang chạy Flask. Nhập `y` sẽ tiếp tục triển khai thật; nhập `n` để chỉ xem trước và hủy. Nếu không có người nhập xác nhận trong terminal, yêu cầu dry-run trên trình duyệt sẽ chờ.
 
 ## Yêu cầu
 
-- Windows và **Python 3.13.17**.
-- Python 3.13.17 phải được cài đặt trước khi tạo môi trường ảo. Có thể kiểm tra các phiên bản Python mà Python Launcher nhận diện bằng `py -0p`; bảo đảm phiên bản được dùng là `3.13.17`.
+- Windows và Python 3.13.17.
 - Kết nối mạng từ máy chạy ứng dụng đến các thiết bị trong inventory.
-- SSH đã được bật và tài khoản có đủ quyền cấu hình trên các thiết bị.
+- SSH được bật trên thiết bị và tài khoản có đủ quyền cấu hình.
+- Một môi trường lab đã khởi chạy, chẳng hạn EVE-NG.
 
-## Cài đặt và chạy trên Windows
+## Cài đặt và khởi chạy
 
-Mở PowerShell tại thư mục dự án, sau đó chạy:
+Mở PowerShell tại thư mục gốc repository:
 
 ```powershell
 cd .\Vlan
-py -3.13 --version
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python --version
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-python main.py
+python app.py
 ```
 
-Hai lệnh kiểm tra phiên bản phải in `Python 3.13.17`. Nếu `py -3.13` chọn một bản vá khác hoặc không tìm thấy Python, hãy cài Python 3.13.17 và tạo môi trường ảo bằng đường dẫn đầy đủ đến đúng `python.exe`, ví dụ:
-
-```powershell
-& "C:\đường-dẫn\đến\Python313\python.exe" -m venv .venv
-```
+Mở trình duyệt tại [http://127.0.0.1:5000](http://127.0.0.1:5000). Dừng máy chủ bằng `Ctrl+C` trong terminal.
 
 Nếu PowerShell chặn kích hoạt môi trường ảo, có thể cho phép script cục bộ cho tài khoản hiện tại rồi kích hoạt lại:
 
@@ -50,18 +47,15 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\.venv\Scripts\Activate.ps1
 ```
 
-Khi môi trường ảo đã bật, dấu nhắc PowerShell thường hiển thị `(.venv)`. Cần bật lại môi trường ảo mỗi lần mở terminal mới:
+Để chạy giao diện dòng lệnh thay vì web:
 
 ```powershell
-cd .\Vlan
-.\.venv\Scripts\Activate.ps1
+python main.py
 ```
 
-Thoát môi trường ảo bằng `deactivate`.
+## Khai báo thông tin đăng nhập
 
-## Thông tin đăng nhập thiết bị
-
-Ứng dụng đọc các biến môi trường có tiền tố được khai báo trong `configs/inventory.yaml`. Tạo file `.env` trong thư mục `Vlan` với thông tin của bạn:
+Tạo file `.env` trong thư mục `Vlan` và đặt thông tin phù hợp với giá trị `env_prefix` của từng thiết bị trong `configs/inventory.yaml`:
 
 ```dotenv
 SW1_USERNAME=<ten_dang_nhap>
@@ -80,29 +74,27 @@ R1_USERNAME=<ten_dang_nhap>
 R1_PASSWORD=<mat_khau>
 ```
 
-Thay các giá trị mẫu bằng thông tin thật; bỏ các dòng `*_SECRET` nếu không sử dụng. Không đưa `.env` chứa thông tin xác thực thật lên Git. Nếu không khai báo biến môi trường, mã nguồn hiện có dùng thông tin mặc định, vì vậy hãy cấu hình thông tin riêng trước khi kết nối thiết bị.
+Thay các giá trị mẫu bằng thông tin thật; `*_SECRET` chỉ cần cho Cisco khi cần vào chế độ enable. Hãy tự khai báo thông tin xác thực trước khi kết nối: nếu thiếu biến môi trường, mã nguồn hiện dùng giá trị dự phòng được định nghĩa trong chương trình. Không chia sẻ hoặc đưa `.env` chứa thông tin thật lên Git.
 
-## Cấu hình dự án
+## Cấu hình lab mẫu
 
-Các file YAML trong `configs/` là nguồn cấu hình của ứng dụng:
+Các file trong `configs/` là nguồn dữ liệu được giao diện đọc và cập nhật:
 
 | File | Nội dung |
 |---|---|
-| `configs/inventory.yaml` | Tên, địa chỉ IP, loại thiết bị và tiền tố biến môi trường |
-| `configs/vlans.yaml` | VLAN ID, tên VLAN và địa chỉ gateway |
-| `configs/ports.yaml` | Cổng trunk/access trên từng thiết bị |
-| `configs/compliance_rules.yaml` | Các tiêu chí kiểm tra compliance |
+| `configs/inventory.yaml` | Tên, IP quản trị, loại thiết bị và tiền tố biến môi trường |
+| `configs/vlans.yaml` | VLAN ID, tên VLAN và gateway |
+| `configs/ports.yaml` | Ánh xạ cổng Access/Trunk theo IP thiết bị |
+| `configs/compliance_rules.yaml` | Quy tắc dùng bởi chức năng compliance trong CLI |
 
-Cấu hình mẫu khai báo:
+Cấu hình mẫu hiện tại:
 
-| Thiết bị | IP | Loại | Phân công cổng |
+| Thiết bị | IP quản trị | Nền tảng | Cổng được cấu hình |
 |---|---|---|---|
-| SW1 | `192.168.239.11` | Cisco IOS | Trunk `Ethernet0/0`, `Ethernet0/2`; access `Ethernet0/1` thuộc VLAN 10 |
-| SW2 | `192.168.239.12` | Cisco IOS | Trunk `Ethernet0/0`, `Ethernet0/1`; access `Ethernet0/2` thuộc VLAN 20 |
-| SW3 | `192.168.239.13` | Cisco IOS | Trunk `Ethernet0/0`; access `Ethernet0/1` thuộc VLAN 30 và `Ethernet0/2` thuộc VLAN 40 |
-| R1 | `192.168.239.14` | MikroTik RouterOS | `ether1` |
-
-Các VLAN mẫu:
+| SW1 | `192.168.239.11` | Cisco IOS | Trunk `Ethernet0/0`, `Ethernet0/2`; Access `Ethernet0/1` thuộc VLAN 10 |
+| SW2 | `192.168.239.12` | Cisco IOS | Trunk `Ethernet0/0`, `Ethernet0/1`; Access `Ethernet0/2` thuộc VLAN 20 |
+| SW3 | `192.168.239.13` | Cisco IOS | Trunk `Ethernet0/0`; Access `Ethernet0/1` thuộc VLAN 30 và `Ethernet0/2` thuộc VLAN 40 |
+| R1 | `192.168.239.14` | MikroTik RouterOS | Trunk `ether1` |
 
 | VLAN | Tên | Gateway |
 |---:|---|---|
@@ -111,75 +103,37 @@ Các VLAN mẫu:
 | 30 | `Phong_Quan_Tri` | `192.168.30.1/24` |
 | 40 | `Phong_IT` | `192.168.40.1/24` |
 
-Điều chỉnh IP, loại thiết bị, VLAN và tên interface trong các file YAML sao cho khớp với lab thực tế trước khi chạy. Topology lab được cung cấp riêng dưới dạng file `.unl`; mở topology đó trong phần mềm lab tương ứng và bảo đảm các node đang chạy, có thể truy cập SSH từ máy chạy ứng dụng.
+Điều chỉnh IP, loại thiết bị, interface, VLAN và gateway để khớp topology thực tế. Dùng tab **Tổng quan & Thiết bị**, **Quy hoạch VLAN** và **Cổng Access / Trunk** trên giao diện để cập nhật cấu hình. Trước khi chạy tác vụ, chọn **Kiểm tra dữ liệu đầu vào**; bước này kiểm tra định dạng và tính nhất quán YAML, không xác nhận rằng thiết bị có thể truy cập qua mạng.
 
-## Sử dụng
+## Quy trình thao tác khuyến nghị
 
-Sau khi chạy `python main.py`, chọn một chức năng trong menu:
-
-| Lựa chọn | Chức năng |
-|---:|---|
-| 1 | `Deploy Configuration (Concurrent)` |
-| 2 | `Backup Configuration` |
-| 3 | `Compare Configuration (Diff)` |
-| 4 | `Rollback Configuration` |
-| 5 | `Dry-run (Preview Commands)` |
-| 6 | `Compliance Checking` |
-| 7 | `Network Device Status` |
-| 8 | `Export Summary Report (CSV/Excel)` |
-| 0 | `Exit` |
-
-Chức năng 6 chỉ kiểm tra và báo cáo kết quả, không tự sửa các vi phạm. Trước khi triển khai hoặc rollback, nên sao lưu và kiểm tra kỹ thiết bị đích.
+1. Khởi chạy lab và xác nhận các IP quản trị có thể truy cập từ máy chạy ứng dụng.
+2. Cập nhật inventory, VLAN, gateway và ánh xạ cổng cho đúng topology; khai báo tài khoản SSH.
+3. Chạy **Kiểm tra dữ liệu đầu vào** và xử lý mọi lỗi được báo.
+4. Chạy **Mô phỏng & Xem trước lệnh**. Xem nội dung trong terminal; nhập `n` nếu chưa muốn triển khai.
+5. Sao lưu cấu hình hiện tại, sau đó mới chạy **Triển khai cấu hình tự động**. Nút triển khai áp dụng thay đổi lên các thiết bị đã khai báo.
+6. Kiểm tra kết quả tác vụ và trạng thái SSH; xác minh cấu hình trực tiếp trên thiết bị.
 
 ## Dữ liệu được tạo
 
-- `backups/<ten_thiet_bi>/`: cấu hình sao lưu, gồm cả bản trước triển khai (`*_pre_deploy.cfg`).
-- `reports/`: báo cáo CSV có dấu thời gian, có thể mở bằng Excel.
+- `backups/<ten_thiet_bi>/`: file `.cfg` sao lưu; bản chụp trước triển khai có hậu tố `_pre_deploy`.
+- `reports/`: báo cáo CSV được tạo bởi chức năng xuất báo cáo trong CLI.
 
-## Cấu trúc mã nguồn
+Tab **Bản sao lưu** trên web chỉ liệt kê file; khôi phục và so sánh cấu hình thực hiện qua CLI. Các lựa chọn CLI hiện có: deploy, backup, compare diff, rollback, dry-run, compliance, kiểm tra trạng thái và xuất báo cáo.
+
+## Cấu trúc dự án
 
 ```text
 Vlan/
-├── main.py
-├── requirements.txt
-├── README.md
-├── configs/
-│   ├── inventory.yaml
-│   ├── vlans.yaml
-│   ├── ports.yaml
-│   └── compliance_rules.yaml
-├── core/
-│   ├── connection_manager.py
-│   ├── deployment_manager.py
-│   └── network_device.py
-├── devices/
-│   ├── cisco_ios.py
-│   └── mikrotik.py
-├── modules/
-│   ├── deployer.py
-│   ├── backup.py
-│   ├── diff.py
-│   ├── rollback.py
-│   ├── compliance.py
-│   └── reporter.py
-├── templates/
-│   └── vlan.j2
-├── backups/
-│   ├── SW1/
-│   ├── SW2/
-│   ├── SW3/
-│   └── R1/
-└── reports/
+├── app.py                 # Máy chủ Flask và các thao tác của giao diện web
+├── main.py                # Menu CLI
+├── Web/
+│   └── Web.html           # Bản giao diện HTML tĩnh đi kèm
+├── configs/               # Inventory, VLAN, port và compliance rules
+├── core/                  # Điều phối triển khai và kết nối thiết bị
+├── devices/               # Hành vi theo Cisco IOS / MikroTik RouterOS
+├── modules/               # Deploy, backup, diff, rollback, compliance, report
+├── templates/             # Template cấu hình VLAN
+├── backups/               # Cấu hình sao lưu
+└── reports/               # Báo cáo CSV
 ```
-
-### Vai trò từng thành phần
-
-- `main.py`: khởi chạy ứng dụng, nạp biến môi trường và hiển thị menu tương tác.
-- `requirements.txt`: danh sách thư viện Python cần cài để chạy ứng dụng.
-- `configs/`: cấu hình đầu vào dạng YAML. `inventory.yaml` khai báo thiết bị; `vlans.yaml` khai báo VLAN và gateway; `ports.yaml` ánh xạ VLAN vào cổng trunk/access; `compliance_rules.yaml` chứa các tiêu chí kiểm tra.
-- `core/`: phần dùng chung của ứng dụng. `connection_manager.py` tạo đối tượng thiết bị và quản lý kết nối SSH; `network_device.py` định nghĩa giao diện chung cho thiết bị mạng; `deployment_manager.py` nạp cấu hình và điều phối các chức năng.
-- `devices/`: triển khai hành vi riêng theo nền tảng. `cisco_ios.py` xử lý lệnh và kiểm tra trên Cisco IOS; `mikrotik.py` xử lý lệnh và kiểm tra trên MikroTik RouterOS.
-- `modules/`: các tác vụ được điều phối bởi `DeploymentManager`: `deployer.py` tạo và triển khai cấu hình; `backup.py` sao lưu; `diff.py` so sánh bản sao lưu; `rollback.py` khôi phục cấu hình; `compliance.py` kiểm tra quy tắc; `reporter.py` xuất báo cáo CSV.
-- `templates/vlan.j2`: template Jinja2 sinh lệnh VLAN, trunk/access cho Cisco IOS và MikroTik RouterOS.
-- `backups/<ten_thiet_bi>/`: nơi lưu các bản cấu hình được lấy từ thiết bị, bao gồm snapshot trước khi triển khai.
-- `reports/`: nơi lưu các báo cáo CSV được xuất từ chương trình.
