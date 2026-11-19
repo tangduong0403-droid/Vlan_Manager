@@ -7,6 +7,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from core.connection_manager import ConnectionManager
 from modules.backup import BackupManager
+from modules.collector import DeviceCollector
 from modules.compliance import ComplianceChecker
 from modules.deployer import Deployer
 from modules.diff import DiffManager
@@ -17,6 +18,21 @@ from modules.rollback import RollbackManager
 class DeploymentManager:
     def __init__(self):
         self.project_dir = Path(__file__).resolve().parents[1]
+        self.operation_history = []
+        self.latest_facts = {}
+        self.latest_port_reports = []
+        self.latest_port_summary = {
+            "total_ports": 0,
+            "used_ports": 0,
+            "free_ports": 0,
+            "utilization_pct": 0.0,
+        }
+        self.latest_compliance = {}
+        self.latest_compliance_rate = None
+        self.latest_port_csv = None
+        self.reload_configs()
+
+    def reload_configs(self):
         config_dir = self.project_dir / "configs"
 
         inventory = self._load_yaml(config_dir / "inventory.yaml")
@@ -68,6 +84,7 @@ class DeploymentManager:
         self.compliance_checker = ComplianceChecker(
             self.devices, self.compliance_rules, self.ports_by_ip
         )
+        self.collector = DeviceCollector(self.devices, self.ports_by_ip)
         self.deployer = Deployer(
             self.devices,
             self.vlans,
@@ -80,23 +97,29 @@ class DeploymentManager:
             report_dir=str(self.project_dir / "reports")
         )
 
-        self._report_records = {
-            device.name: {
-                "Device": device.name,
-                "IP": device.ip,
-                "Device Type": device.device_type,
-                "SSH Status": "NOT CHECKED",
-                "Deploy Status": "NOT RUN",
-                "Dry-run Status": "NOT RUN",
-                "Backup Status": "NOT RUN",
-                "Compliance Status": "NOT RUN",
-                "Last Operation": "N/A",
-                "Last Updated": "",
-                "Operation Duration (s)": "",
-                "Error": "",
-            }
-            for device in self.devices
-        }
+        old_records = getattr(self, "_report_records", {})
+        self._report_records = {}
+        for device in self.devices:
+            if device.name in old_records:
+                rec = old_records[device.name]
+                rec["IP"] = device.ip
+                rec["Device Type"] = device.device_type
+                self._report_records[device.name] = rec
+            else:
+                self._report_records[device.name] = {
+                    "Device": device.name,
+                    "IP": device.ip,
+                    "Device Type": device.device_type,
+                    "SSH Status": "NOT CHECKED",
+                    "Deploy Status": "NOT RUN",
+                    "Dry-run Status": "NOT RUN",
+                    "Backup Status": "NOT RUN",
+                    "Compliance Status": "NOT RUN",
+                    "Last Operation": "N/A",
+                    "Last Updated": "",
+                    "Operation Duration (s)": "",
+                    "Error": "",
+                }
 
     @staticmethod
     def _load_yaml(path: Path) -> dict:
@@ -119,12 +142,25 @@ class DeploymentManager:
         record["Last Updated"] = datetime.now().astimezone().isoformat(timespec="seconds")
         record["Operation Duration (s)"] = f"{duration:.3f}"
 
+    def _add_history(self, operation: str, status: str, summary: str, duration: float):
+        self.operation_history.insert(0, {
+            "time": datetime.now().strftime("%H:%M:%S %d/%m/%Y"),
+            "operation": operation,
+            "status": status,
+            "summary": summary,
+            "duration": f"{duration:.2f}s",
+        })
+        self.operation_history = self.operation_history[:30]
+
     def execute_deploy(self):
         started = perf_counter()
         results = self.deployer.deploy_concurrent()
         duration = perf_counter() - started
 
+        ok_cnt = 0
         for result in results:
+            if result["Status"] == "SUCCESS":
+                ok_cnt += 1
             self._record_operation(
                 result["Device"],
                 "Deploy",
@@ -135,6 +171,8 @@ class DeploymentManager:
                     "Error": self._clean_error(result["Error"]),
                 },
             )
+        status = "SUCCESS" if ok_cnt == len(results) else "PARTIAL"
+        self._add_history("Deploy Configuration", status, f"{ok_cnt}/{len(results)} thiết bị thành công", duration)
         return results
 
     def execute_backup(self):
@@ -142,7 +180,10 @@ class DeploymentManager:
         results = self.backup_manager.backup_all()
         duration = perf_counter() - started
 
+        ok_cnt = 0
         for result in results:
+            if result["Status"] == "SUCCESS":
+                ok_cnt += 1
             self._record_operation(
                 result["Device"],
                 "Backup",
@@ -152,6 +193,8 @@ class DeploymentManager:
                     "Error": self._clean_error(result["Error"]),
                 },
             )
+        status = "SUCCESS" if ok_cnt == len(results) else "PARTIAL"
+        self._add_history("Backup Configuration", status, f"{ok_cnt}/{len(results)} bản sao lưu thành công", duration)
         return results
 
     def execute_diff(self):
@@ -160,9 +203,9 @@ class DeploymentManager:
     def execute_rollback(self):
         return self.rollback_manager.rollback_interactive()
 
-    def execute_dry_run(self):
+    def execute_dry_run(self, interactive: bool = True):
         started = perf_counter()
-        confirmed = self.deployer.dry_run()
+        confirmed = self.deployer.dry_run(interactive=interactive)
         duration = perf_counter() - started
 
         if not confirmed:
@@ -171,8 +214,9 @@ class DeploymentManager:
                     device.name,
                     "Dry-run",
                     duration,
-                    **{"Dry-run Status": "CANCELLED"},
+                    **{"Dry-run Status": "PREVIEWED" if not interactive else "CANCELLED"},
                 )
+            self._add_history("Dry-run Preview", "SUCCESS", f"Sinh lệnh mô phỏng cho {len(self.devices)} thiết bị", duration)
             return []
 
         results = self.execute_deploy()
@@ -185,6 +229,11 @@ class DeploymentManager:
         results = self.compliance_checker.check_all()
         duration = perf_counter() - started
 
+        self.latest_compliance = results
+        pass_cnt = sum(1 for r in results.values() if r.get("Overall") == "PASS")
+        total = len(results)
+        self.latest_compliance_rate = round((pass_cnt / total) * 100, 1) if total > 0 else 0.0
+
         for device_name, result in results.items():
             self._record_operation(
                 device_name,
@@ -196,47 +245,151 @@ class DeploymentManager:
                     "Error": self._clean_error(result["Error"]),
                 },
             )
+        status = "PASS" if pass_cnt == total else "FAIL"
+        self._add_history(
+            "Compliance Checking",
+            status,
+            f"Đạt chuẩn {pass_cnt}/{total} ({self.latest_compliance_rate}%)",
+            duration,
+        )
         return results
 
     def execute_status(self):
-        print("\n========== NETWORK DEVICE STATUS ==========")
+        print("\n================ NETWORK DEVICE STATUS & FACTS ================")
         started = perf_counter()
-        statuses = []
-
-        for device in self.devices:
-            ok, error = ConnectionManager.connect_with_retry(device)
-            status = "SUCCESS" if ok else "FAILED"
-            statuses.append(
-                {
-                    "Device": device.name,
-                    "IP": device.ip,
-                    "Device Type": device.device_type,
-                    "SSH": status,
-                    "Error": "" if ok else error,
-                }
-            )
-            print(
-                f"[{device.name}] {device.ip} ({device.device_type}) "
-                f"SSH: {status}"
-                + (f" ({error})" if not ok else "")
-            )
-            if ok:
-                ConnectionManager.disconnect(device)
-
+        facts_list = self.collector.collect_all_facts()
         duration = perf_counter() - started
-        for result in statuses:
+
+        online_cnt = 0
+        for item in facts_list:
+            self.latest_facts[item["device"]] = item
+            is_online = item["online"]
+            if is_online:
+                online_cnt += 1
+
+            ssh_status = "SUCCESS" if is_online else "FAILED"
+            state_label = "ONLINE" if is_online else "OFFLINE"
+            print(f"\n[{item['device']}] {item['ip']} ({item['device_type']}) -> {state_label}")
+            if is_online:
+                print(f"  - OS Version : {item['os_version']}")
+                print(f"  - Uptime     : {item['uptime']}")
+                print(f"  - CPU / RAM  : {item['cpu']}  |  RAM: {item['ram']}")
+                print(f"  - Ports      : {item['ports_summary']}")
+                print(
+                    f"  - Tables     : Routes={item['routes_count']} | "
+                    f"ARP={item['arp_count']} | MAC={item['mac_count']}"
+                )
+            else:
+                print(f"  - SSH Error  : {item.get('error', 'Unreachable')}")
+
             self._record_operation(
-                result["Device"],
-                "Status",
+                item["device"],
+                "Status & Facts",
                 duration,
                 **{
-                    "SSH Status": result["SSH"],
-                    "Error": result["Error"],
+                    "SSH Status": ssh_status,
+                    "Error": item.get("error", ""),
                 },
             )
-        print("============================================")
-        return statuses
+
+        self.report_manager.export_device_facts(facts_list)
+        print("===============================================================")
+        status = "SUCCESS" if online_cnt == len(facts_list) else "PARTIAL"
+        self._add_history(
+            "Collect Device Facts",
+            status,
+            f"{online_cnt}/{len(facts_list)} thiết bị ONLINE",
+            duration,
+        )
+        return facts_list
+
+    def execute_port_report(self):
+        print("\n=================== PORT UTILIZATION REPORT ===================")
+        started = perf_counter()
+        port_reports, summary = self.collector.collect_port_utilization()
+        duration = perf_counter() - started
+
+        self.latest_port_reports = port_reports
+        self.latest_port_summary = summary
+
+        print(
+            f"{'Thiết bị':<8} | {'IP':<15} | {'Trạng thái':<8} | {'Tổng':>4} | "
+            f"{'Dùng':>4} | {'Trống':>5} | {'Tỷ lệ':>6} | {'Cổng trống'}"
+        )
+        print("-" * 88)
+        for r in port_reports:
+            print(
+                f"{r['Device']:<8} | {r['IP']:<15} | {r['Status']:<8} | "
+                f"{r['Total Ports']:>4} | {r['Used Ports']:>4} | {r['Free Ports']:>5} | "
+                f"{r['Utilization (%)']:>5.1f}% | {r['Free Port List']}"
+            )
+            self._record_operation(
+                r["Device"],
+                "Port Report",
+                duration,
+                **{
+                    "SSH Status": "SUCCESS" if r["Status"] == "ONLINE" else "FAILED",
+                    "Error": r.get("Error", ""),
+                },
+            )
+
+        print("-" * 88)
+        print(
+            f"TỔNG CAMPUS: {summary['used_ports']}/{summary['total_ports']} cổng đang dùng | "
+            f"Còn trống: {summary['free_ports']} cổng | Tỷ lệ sử dụng: {summary['utilization_pct']}%"
+        )
+        self.latest_port_csv = self.report_manager.export_port_utilization(port_reports, summary)
+        print("===============================================================")
+
+        self._add_history(
+            "Port Utilization Report",
+            "SUCCESS",
+            f"Sử dụng {summary['used_ports']}/{summary['total_ports']} cổng ({summary['utilization_pct']}%)",
+            duration,
+        )
+        return port_reports, summary
 
     def execute_report(self):
         records = [record.copy() for record in self._report_records.values()]
-        return self.report_manager.export_summary(records)
+        summary_path = self.report_manager.export_summary(records)
+        if not self.latest_port_reports:
+            self.execute_port_report()
+        else:
+            self.latest_port_csv = self.report_manager.export_port_utilization(
+                self.latest_port_reports, self.latest_port_summary
+            )
+        return summary_path
+
+    def get_dashboard_snapshot(self) -> dict:
+        device_states = []
+        online_count = 0
+        for dev in self.devices:
+            facts = self.latest_facts.get(dev.name)
+            rec = self._report_records.get(dev.name, {})
+            if facts:
+                is_online = facts.get("online", False)
+            else:
+                is_online = rec.get("SSH Status") == "SUCCESS"
+            if is_online:
+                online_count += 1
+            device_states.append({
+                "name": dev.name,
+                "ip": dev.ip,
+                "device_type": dev.device_type,
+                "online": is_online,
+                "checked": (facts is not None) or (rec.get("SSH Status") != "NOT CHECKED"),
+                "compliance": rec.get("Compliance Status", "NOT RUN"),
+                "facts": facts,
+            })
+
+        return {
+            "total_devices": len(self.devices),
+            "online_devices": online_count,
+            "offline_devices": len(self.devices) - online_count,
+            "compliance_rate": self.latest_compliance_rate,
+            "port_summary": self.latest_port_summary,
+            "port_reports": self.latest_port_reports,
+            "device_states": device_states,
+            "operation_history": self.operation_history,
+            "latest_port_csv": self.latest_port_csv,
+        }

@@ -67,7 +67,7 @@ class Deployer:
         print("======================================================")
         return results
 
-    def dry_run(self) -> bool:
+    def dry_run(self, interactive: bool = True) -> bool:
         print("\n========== DRY-RUN MODE (PREVIEW COMMANDS) ==========")
         for dev in self.devices:
             print(f"Device: {dev.name} ({dev.ip}) [{dev.device_type}]")
@@ -78,5 +78,7 @@ class Deployer:
                 print(f"  {cmd}")
             print("-" * 45)
         print("DRY-RUN COMPLETED. No configuration was applied.")
+        if not interactive:
+            return False
         ans = input("Bạn có muốn triển khai thật các lệnh này ngay bây giờ không? (y/n): ").strip().lower()
         return ans == "y"

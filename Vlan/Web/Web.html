@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Campus VLAN Automation — NOC Dashboard</title>
+  <title>Tự động hóa VLAN mạng Campus — Bảng điều khiển giám sát</title>
   <style>
     :root {
       --bg-page: #f1f5f9;
@@ -37,14 +37,13 @@
       line-height: 1.5;
     }
 
-    /* TOP HERO HEADER */
     .topbar {
       background: linear-gradient(125deg, var(--navy-900) 0%, var(--navy-800) 60%, #163a63 100%);
       color: #ffffff;
       padding: 26px 0 30px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
     .topbar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
     .brand-title { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
@@ -62,16 +61,15 @@
     }
     .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
 
-    /* STICKY NAVIGATION TABS */
     .nav-wrapper {
       background: var(--bg-card);
       border-bottom: 1px solid var(--slate-200);
       position: sticky; top: 0; z-index: 40;
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
     }
-    .nav-tabs { display: flex; gap: 8px; list-style: none; overflow-x: auto; }
+    .nav-tabs { display: flex; gap: 6px; list-style: none; overflow-x: auto; }
     .nav-tab {
-      padding: 14px 16px;
+      padding: 14px 15px;
       font-size: 13.5px; font-weight: 600; color: var(--slate-500);
       cursor: pointer; border-bottom: 3px solid transparent;
       white-space: nowrap; transition: all 0.18s ease;
@@ -79,7 +77,6 @@
     .nav-tab:hover { color: var(--blue-600); background: var(--slate-100); }
     .nav-tab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); }
 
-    /* KPI STATS GRID */
     .kpi-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
       margin: 24px 0;
@@ -92,18 +89,18 @@
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .kpi-label { font-size: 13px; font-weight: 600; color: var(--slate-500); }
-    .kpi-value { font-size: 28px; font-weight: 800; color: var(--slate-900); margin-top: 4px; }
+    .kpi-label { font-size: 12.5px; font-weight: 600; color: var(--slate-500); }
+    .kpi-value { font-size: 26px; font-weight: 800; color: var(--slate-900); margin-top: 4px; }
+    .kpi-sub { font-size: 12px; color: var(--slate-500); margin-top: 2px; }
     .kpi-badge {
-      width: 44px; height: 44px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
+      padding: 0 10px; min-width: 52px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11.5px;
     }
     .kpi-blue { background: var(--blue-50); color: var(--blue-600); }
     .kpi-emerald { background: var(--emerald-50); color: var(--emerald-600); }
     .kpi-amber { background: var(--amber-50); color: var(--amber-600); }
     .kpi-rose { background: var(--rose-50); color: var(--rose-600); }
 
-    /* MAIN CARDS */
     .card {
       background: var(--bg-card); border: 1px solid var(--slate-200);
       border-radius: var(--radius); padding: 24px;
@@ -117,9 +114,8 @@
     .card-title { font-size: 17px; font-weight: 700; color: var(--slate-900); }
     .card-sub { font-size: 12.5px; color: var(--slate-500); margin-top: 2px; }
 
-    /* BUTTONS */
     .btn {
-      padding: 9px 16px; border: none; border-radius: 8px;
+      padding: 9px 15px; border: none; border-radius: 8px;
       font-size: 13px; font-weight: 600; cursor: pointer;
       display: inline-flex; align-items: center; gap: 6px;
       transition: all 0.15s ease; text-decoration: none;
@@ -139,7 +135,6 @@
     .btn-danger-soft { background: var(--rose-50); color: var(--rose-600); border: 1px solid #fecdd3; }
     .btn-danger-soft:hover { background: var(--rose-600); color: #fff; }
 
-    /* INPUTS & TABLES */
     .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
     .input-control {
       padding: 8px 12px; border: 1px solid var(--slate-200); border-radius: 8px;
@@ -151,14 +146,13 @@
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     thead th {
-      text-align: left; padding: 12px 14px; background: var(--slate-100);
-      color: var(--slate-700); font-weight: 700; font-size: 12.5px;
+      text-align: left; padding: 12px 13px; background: var(--slate-100);
+      color: var(--slate-700); font-weight: 700; font-size: 12px;
       text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid var(--slate-200);
     }
-    tbody td { padding: 13px 14px; border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
+    tbody td { padding: 13px; border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
     tbody tr:hover td { background: #f8fafc; }
 
-    /* TAGS & PILLS */
     .tag {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
@@ -168,13 +162,32 @@
     .tag-mikrotik { background: #f3e8ff; color: #7e22ce; }
     .tag-access { background: var(--blue-50); color: var(--blue-700); border: 1px solid #bfdbfe; }
     .tag-trunk { background: var(--emerald-50); color: var(--emerald-600); border: 1px solid #a7f3d0; }
+    .tag-online { background: var(--emerald-50); color: #047857; border: 1px solid #a7f3d0; }
+    .tag-offline { background: var(--rose-50); color: #be123c; border: 1px solid #fecdd3; }
+    .tag-pending { background: var(--slate-100); color: var(--slate-500); border: 1px solid var(--slate-200); }
+    .tag-warn { background: var(--amber-50); color: #b45309; border: 1px solid #fde68a; }
     .tag-del {
       background: none; border: none; color: inherit; cursor: pointer;
       font-weight: 800; opacity: 0.65; padding: 0 2px;
     }
     .tag-del:hover { opacity: 1; color: var(--rose-600); }
 
-    /* ALERTS */
+    .progress-bar {
+      width: 100px; height: 8px; background: var(--slate-200);
+      border-radius: 999px; overflow: hidden; display: inline-block;
+      vertical-align: middle; margin-right: 6px;
+    }
+    .progress-fill { height: 100%; background: var(--blue-600); border-radius: 999px; }
+    .progress-fill.high { background: var(--amber-600); }
+    .progress-fill.crit { background: var(--rose-600); }
+
+    details summary { cursor: pointer; color: var(--blue-600); font-weight: 600; font-size: 12px; }
+    .facts-pre {
+      background: #0f172a; color: #e2e8f0; padding: 10px 12px; border-radius: 8px;
+      font-family: Consolas, monospace; font-size: 11.5px; margin-top: 8px;
+      white-space: pre-wrap; max-height: 180px; overflow-y: auto;
+    }
+
     .alert {
       padding: 13px 18px; border-radius: 10px; margin-top: 18px;
       font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
@@ -183,7 +196,6 @@
     .alert-danger { background: var(--rose-50); color: #9f1239; border: 1px solid #fecdd3; }
     .alert-warning { background: var(--amber-50); color: #92400e; border: 1px solid #fde68a; }
 
-    /* CONSOLE TERMINAL */
     .terminal-wrap { margin-top: 18px; border-radius: 10px; overflow: hidden; border: 1px solid #1e293b; }
     .terminal-bar {
       background: #1e293b; color: #94a3b8; padding: 8px 14px;
@@ -195,11 +207,10 @@
     .terminal-body {
       background: #0b1120; color: #34d399;
       font-family: 'Consolas', 'Courier New', monospace; font-size: 13px;
-      padding: 18px; white-space: pre-wrap; max-height: 480px; overflow-y: auto; line-height: 1.55;
+      padding: 18px; white-space: pre-wrap; max-height: 460px; overflow-y: auto; line-height: 1.55;
     }
     .terminal-body.err { color: #fda4af; }
 
-    /* MODAL */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px);
@@ -223,38 +234,62 @@
 </head>
 <body>
 
-  <!-- TOP BAR -->
+  {# Bảng ánh xạ tự động các chuỗi trạng thái & thao tác từ Backend sang Tiếng Việt #}
+  {% set op_vi = {
+    'Deploy Configuration': 'Triển khai cấu hình tự động',
+    'Backup Configuration': 'Sao lưu cấu hình thiết bị',
+    'Dry-run Preview': 'Mô phỏng lệnh (Chạy thử)',
+    'Compliance Checking': 'Kiểm tra tuân thủ cấu hình',
+    'Collect Device Facts': 'Thu thập thông tin thiết bị',
+    'Port Utilization Report': 'Báo cáo sử dụng cổng'
+  } %}
+  {% set status_vi = {
+    'SUCCESS': 'THÀNH CÔNG',
+    'PASS': 'ĐẠT CHUẨN',
+    'FAIL': 'VI PHẠM',
+    'FAIL (Unreachable)': 'MẤT KẾT NỐI',
+    'PARTIAL': 'ĐẠT MỘT PHẦN',
+    'FAILED': 'THẤT BẠI',
+    'ERROR': 'LỖI THỰC THI',
+    'NOT RUN': 'CHƯA KIỂM TRA',
+    'ONLINE': 'TRỰC TUYẾN',
+    'OFFLINE': 'NGOẠI TUYẾN'
+  } %}
+
+  <!-- THANH TIÊU ĐỀ TRÊN CÙNG -->
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand-title">
         <div class="brand-icon">VN</div>
         <div>
-          <h1>Campus VLAN Automation</h1>
-          <div class="brand-subtitle">Hệ thống tự động hóa quản lý VLAN, Trunk &amp; Inter-VLAN Routing (Cisco IOS &amp; MikroTik)</div>
+          <h1>Tự động hóa VLAN mạng Campus</h1>
+          <div class="brand-subtitle">Hệ thống quản lý VLAN, cổng đường trục, thống kê cổng và giám sát thiết bị đa nền tảng (Cisco IOS &amp; MikroTik)</div>
         </div>
       </div>
       <div class="status-pill">
         <span class="dot-live"></span>
-        <span>EVE-NG Lab Controller &bull; Validator Active</span>
+        <span id="liveClock">Bộ điều khiển Lab EVE-NG &bull; Đồng bộ trực tiếp</span>
       </div>
     </div>
   </header>
 
-  <!-- NAVIGATION -->
+  <!-- THANH ĐIỀU HƯỚNG CÁC TAB -->
   <nav class="nav-wrapper">
     <div class="container">
       <ul class="nav-tabs">
         <li class="nav-tab {{ 'active' if active_tab in ['overview', 'devices'] }}" onclick="switchPane('overview', this)">Tổng quan &amp; Thiết bị</li>
+        <li class="nav-tab {{ 'active' if active_tab == 'facts' }}" onclick="switchPane('facts', this)">Thông tin thiết bị (Hệ điều hành / CPU / RAM)</li>
+        <li class="nav-tab {{ 'active' if active_tab == 'port_report' }}" onclick="switchPane('port_report', this)">Báo cáo sử dụng cổng</li>
         <li class="nav-tab {{ 'active' if active_tab == 'vlans' }}" onclick="switchPane('vlans', this)">Quy hoạch VLAN</li>
-        <li class="nav-tab {{ 'active' if active_tab == 'ports' }}" onclick="switchPane('ports', this)">Cổng Access / Trunk</li>
-        <li class="nav-tab {{ 'active' if active_tab in ['automation', 'result'] }}" onclick="switchPane('automation', this)">Tự động hóa &amp; Kiểm tra lỗi</li>
+        <li class="nav-tab {{ 'active' if active_tab == 'ports' }}" onclick="switchPane('ports', this)">Phân bổ cổng Access / Trunk</li>
+        <li class="nav-tab {{ 'active' if active_tab in ['automation', 'result'] }}" onclick="switchPane('automation', this)">Tự động hóa &amp; Lịch sử</li>
         <li class="nav-tab {{ 'active' if active_tab == 'backups' }}" onclick="switchPane('backups', this)">Bản sao lưu ({{ total_backups }})</li>
       </ul>
     </div>
   </nav>
 
   <main class="container">
-    <!-- FLASH ALERTS -->
+    <!-- THÔNG BÁO KẾT QUẢ -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for cat, msg in messages %}
@@ -266,51 +301,64 @@
       {% endif %}
     {% endwith %}
 
-    <!-- KPI CARDS -->
+    <!-- THẺ CHỈ SỐ TỔNG QUAN -->
     <section class="kpi-grid">
       <div class="kpi-card">
         <div>
-          <div class="kpi-label">Tổng thiết bị mạng</div>
-          <div class="kpi-value">{{ total_devices }}</div>
+          <div class="kpi-label">Thiết bị trực tuyến / Tổng</div>
+          <div class="kpi-value" id="kpiOnline">{{ snapshot.online_devices }}/{{ snapshot.total_devices }}</div>
+          <div class="kpi-sub">Ngoại tuyến: <span id="kpiOffline">{{ snapshot.offline_devices }}</span></div>
         </div>
-        <div class="kpi-badge kpi-blue">DEV</div>
+        <div class="kpi-badge kpi-emerald">TRỰC TUYẾN</div>
       </div>
       <div class="kpi-card">
         <div>
-          <div class="kpi-label">VLAN nghiệp vụ</div>
-          <div class="kpi-value">{{ total_vlans }}</div>
+          <div class="kpi-label">Tỷ lệ tuân thủ cấu hình</div>
+          <div class="kpi-value" id="kpiCompliance">
+            {{ (snapshot.compliance_rate|string + '%') if snapshot.compliance_rate is not none else 'Chưa kiểm tra' }}
+          </div>
+          <div class="kpi-sub">Đối soát chuẩn SSH / VLAN / Đường trục</div>
         </div>
-        <div class="kpi-badge kpi-emerald">VLAN</div>
+        <div class="kpi-badge kpi-blue">TUÂN THỦ</div>
       </div>
       <div class="kpi-card">
         <div>
-          <div class="kpi-label">Cổng Access đã gán</div>
-          <div class="kpi-value">{{ total_access }}</div>
+          <div class="kpi-label">Tỷ lệ sử dụng cổng toàn mạng</div>
+          <div class="kpi-value" id="kpiPortUtil">{{ snapshot.port_summary.utilization_pct }}%</div>
+          <div class="kpi-sub" id="kpiPortDetail">
+            Đang dùng {{ snapshot.port_summary.used_ports }}/{{ snapshot.port_summary.total_ports }} (Còn trống {{ snapshot.port_summary.free_ports }})
+          </div>
         </div>
-        <div class="kpi-badge kpi-amber">PORT</div>
+        <div class="kpi-badge kpi-amber">CỔNG</div>
       </div>
       <div class="kpi-card">
         <div>
-          <div class="kpi-label">Bản sao lưu cấu hình</div>
-          <div class="kpi-value">{{ total_backups }}</div>
+          <div class="kpi-label">VLAN &amp; Bản sao lưu</div>
+          <div class="kpi-value">{{ total_vlans }} / {{ total_backups }}</div>
+          <div class="kpi-sub">{{ total_vlans }} VLAN &bull; {{ total_access }} cổng truy cập</div>
         </div>
-        <div class="kpi-badge kpi-rose">CFG</div>
+        <div class="kpi-badge kpi-rose">CẤU HÌNH</div>
       </div>
     </section>
 
-    <!-- PANE 1: THIẾT BỊ (INVENTORY) -->
+    <!-- TAB 1: TỔNG QUAN & QUẢN LÝ THIẾT BỊ -->
     <section id="pane-overview" class="pane {{ 'active' if active_tab in ['overview', 'devices'] }}">
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Quản lý thiết bị hạ tầng (configs/inventory.yaml)</div>
-            <div class="card-sub">Danh sách Switch Layer 2/3 và Router thực hiện định tuyến Inter-VLAN</div>
+            <div class="card-title">Quản lý &amp; Giám sát thiết bị hạ tầng (configs/inventory.yaml)</div>
+            <div class="card-sub">Theo dõi trạng thái kết nối trực tuyến, kết quả kiểm tra tuân thủ và quản lý danh sách thiết bị</div>
           </div>
-          <button class="btn btn-primary" onclick="openAddDevice()">+ Thêm thiết bị mới</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <form action="/action/status" method="POST">
+              <button class="btn btn-outline">↻ Quét trạng thái &amp; Thông tin thiết bị</button>
+            </form>
+            <button class="btn btn-primary" onclick="openAddDevice()">+ Thêm thiết bị mới</button>
+          </div>
         </div>
 
         <div class="toolbar">
-          <input type="text" id="searchDev" class="input-control search-field" placeholder="Lọc nhanh theo tên, IP, nền tảng..." onkeyup="filterDevices()">
+          <input type="text" id="searchDev" class="input-control search-field" placeholder="Lọc nhanh theo tên, IP, hệ điều hành..." onkeyup="filterDevices()">
           <span class="card-sub" id="devCountText">Hiển thị {{ total_devices }}/{{ total_devices }} thiết bị</span>
         </div>
 
@@ -321,28 +369,44 @@
                 <th>Tên thiết bị</th>
                 <th>Địa chỉ IP</th>
                 <th>Hệ điều hành</th>
-                <th>Env Prefix (.env)</th>
-                <th>Cổng SSH</th>
+                <th>Trạng thái hiện tại</th>
+                <th>Kiểm tra tuân thủ</th>
+                <th>Tiền tố biến (.env)</th>
                 <th style="text-align:right;">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {% for sw in switches %}
+              {% set st = state_by_name.get(sw.name, {}) %}
               <tr>
                 <td><strong>{{ sw.name }}</strong></td>
                 <td><code>{{ sw.ip }}</code></td>
                 <td>
                   {% if sw.device_type == 'mikrotik_routeros' %}
-                    <span class="tag tag-mikrotik">mikrotik_routeros</span>
+                    <span class="tag tag-mikrotik">MikroTik RouterOS</span>
                   {% else %}
-                    <span class="tag tag-ios">{{ sw.device_type }}</span>
+                    <span class="tag tag-ios">Cisco IOS</span>
                   {% endif %}
                 </td>
+                <td class="live-status-cell" data-device="{{ sw.name }}">
+                  {% if not st.get('checked') %}
+                    <span class="tag tag-pending">CHƯA QUÉT</span>
+                  {% elif st.get('online') %}
+                    <span class="tag tag-online">● TRỰC TUYẾN</span>
+                  {% else %}
+                    <span class="tag tag-offline">● NGOẠI TUYẾN</span>
+                  {% endif %}
+                </td>
+                <td class="live-comp-cell" data-device="{{ sw.name }}">
+                  {% set c = st.get('compliance', 'NOT RUN') %}
+                  <span class="tag {{ 'tag-online' if c == 'PASS' else ('tag-offline' if 'FAIL' in c or c == 'ERROR' else 'tag-pending') }}">
+                    {{ status_vi.get(c, c) }}
+                  </span>
+                </td>
                 <td>{{ sw.env_prefix }}</td>
-                <td>22</td>
                 <td style="text-align:right;">
                   <button class="btn btn-outline btn-sm" onclick="openEditDevice('{{ sw.name }}','{{ sw.ip }}','{{ sw.device_type }}','{{ sw.env_prefix }}')">Sửa</button>
-                  <form action="/device/delete/{{ sw.ip }}" method="POST" style="display:inline;" onsubmit="return confirm('Xóa thiết bị {{ sw.name }} ({{ sw.ip }}) khỏi inventory?')">
+                  <form action="/device/delete/{{ sw.ip }}" method="POST" style="display:inline;" onsubmit="return confirm('Xóa thiết bị {{ sw.name }} ({{ sw.ip }}) khỏi danh sách?')">
                     <button type="submit" class="btn btn-danger-soft btn-sm">Xóa</button>
                   </form>
                 </td>
@@ -354,20 +418,164 @@
       </div>
     </section>
 
-    <!-- PANE 2: QUY HOẠCH VLAN -->
+    <!-- TAB 2: THÔNG TIN THIẾT BỊ (HỆ ĐIỀU HÀNH, THỜI GIAN HOẠT ĐỘNG, CPU, RAM, BẢNG ĐỊNH TUYẾN / ARP / MAC) -->
+    <section id="pane-facts" class="pane {{ 'active' if active_tab == 'facts' }}">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Thu thập thông tin chi tiết thiết bị</div>
+            <div class="card-sub">Phiên bản hệ điều hành, thời gian hoạt động, tài nguyên CPU/RAM, trạng thái cổng vật lý và bảng Định tuyến / ARP / MAC</div>
+          </div>
+          <form action="/action/status" method="POST">
+            <button class="btn btn-primary">↻ Thu thập thông tin ngay</button>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Thiết bị</th>
+                <th>Trạng thái</th>
+                <th>Phiên bản hệ điều hành</th>
+                <th>Thời gian hoạt động</th>
+                <th>Tài nguyên CPU / RAM</th>
+                <th>Cổng đang hoạt động</th>
+                <th>Bảng định tuyến / ARP / MAC</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for st in snapshot.device_states %}
+              {% set f = st.facts %}
+              <tr>
+                <td><strong>{{ st.name }}</strong><br><small><code>{{ st.ip }}</code></small></td>
+                <td>
+                  {% if not f %}
+                    <span class="tag tag-pending">CHƯA QUÉT</span>
+                  {% elif f.online %}
+                    <span class="tag tag-online">TRỰC TUYẾN</span>
+                  {% else %}
+                    <span class="tag tag-offline">NGOẠI TUYẾN</span>
+                  {% endif %}
+                </td>
+                <td>{{ f.os_version if f else '-' }}</td>
+                <td>{{ f.uptime if f else '-' }}</td>
+                <td>
+                  {% if f and f.online %}
+                    <div><strong>CPU:</strong> {{ f.cpu }}</div>
+                    <div><strong>RAM:</strong> {{ f.ram }}</div>
+                  {% else %}-{% endif %}
+                </td>
+                <td>{{ f.ports_summary.replace('UP', 'hoạt động') if f else '-' }}</td>
+                <td>
+                  {% if f and f.online %}
+                    <div>Định tuyến: <strong>{{ f.routes_count }}</strong> | ARP: <strong>{{ f.arp_count }}</strong> | MAC: <strong>{{ f.mac_count }}</strong></div>
+                    <details style="margin-top:4px;">
+                      <summary>Xem chi tiết các bảng</summary>
+                      <div class="facts-pre">--- BẢNG ĐỊNH TUYẾN ---
+{{ f.routes_preview }}
+
+--- BẢNG ARP ---
+{{ f.arp_preview }}
+
+--- BẢNG ĐỊA CHỈ MAC ---
+{{ f.mac_preview }}</div>
+                    </details>
+                  {% else %}-{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: BÁO CÁO SỬ DỤNG CỔNG CHUYÊN BIỆT -->
+    <section id="pane-port_report" class="pane {{ 'active' if active_tab == 'port_report' }}">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Báo cáo sử dụng cổng chuyên biệt</div>
+            <div class="card-sub">Thống kê tổng số cổng, số cổng đang sử dụng, số cổng còn trống và tỷ lệ (%) sử dụng theo từng thiết bị</div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <form action="/action/port_report" method="POST">
+              <button class="btn btn-primary">↻ Phân tích &amp; Xuất tệp CSV</button>
+            </form>
+            {% if snapshot.latest_port_csv %}
+              <a class="btn btn-success" href="/report/download/ports">⬇ Tải tệp CSV mới nhất</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Thiết bị</th>
+                <th>Địa chỉ IP</th>
+                <th>Trạng thái</th>
+                <th>Tổng cổng</th>
+                <th>Đang dùng</th>
+                <th>Còn trống</th>
+                <th>Tỷ lệ sử dụng</th>
+                <th>Truy cập / Đường trục</th>
+                <th>Danh sách cổng trống</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if snapshot.port_reports %}
+                {% for r in snapshot.port_reports %}
+                {% set pct = r['Utilization (%)'] %}
+                <tr>
+                  <td><strong>{{ r['Device'] }}</strong></td>
+                  <td><code>{{ r['IP'] }}</code></td>
+                  <td>
+                    <span class="tag {{ 'tag-online' if r['Status'] == 'ONLINE' else 'tag-offline' }}">
+                      {{ status_vi.get(r['Status'], r['Status']) }}
+                    </span>
+                  </td>
+                  <td><strong>{{ r['Total Ports'] }}</strong></td>
+                  <td>{{ r['Used Ports'] }}</td>
+                  <td>{{ r['Free Ports'] }}</td>
+                  <td>
+                    <div class="progress-bar">
+                      <div class="progress-fill {{ 'crit' if pct >= 85 else ('high' if pct >= 60 else '') }}" data-pct="width: {{ pct }}%;"></div>
+                    </div>
+                    <strong>{{ pct }}%</strong>
+                  </td>
+                  <td>{{ r['Access Ports'] }} / {{ r['Trunk Ports'] }}</td>
+                  <td><code>{{ 'Không còn trống' if r['Free Port List'] == 'None' else r['Free Port List'] }}</code></td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="9" style="text-align:center; color:var(--slate-500); padding:26px;">
+                    Chưa có dữ liệu thống kê cổng. Hãy nhấn <strong>"Phân tích &amp; Xuất tệp CSV"</strong> để thu thập từ hệ thống EVE-NG.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: QUY HOẠCH VLAN -->
     <section id="pane-vlans" class="pane {{ 'active' if active_tab == 'vlans' }}">
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Danh sách VLAN &amp; Sub-interface Gateway (configs/vlans.yaml)</div>
-            <div class="card-sub">Tên VLAN không chứa khoảng trắng; Gateway khai báo chuẩn CIDR (ví dụ: 192.168.10.1/24)</div>
+            <div class="card-title">Danh sách VLAN &amp; Cổng mặc định (configs/vlans.yaml)</div>
+            <div class="card-sub">Tên VLAN không chứa khoảng trắng; địa chỉ cổng mặc định khai báo theo chuẩn CIDR (ví dụ: 192.168.10.1/24)</div>
           </div>
         </div>
 
         <form action="/vlan/add" method="POST" class="inline-form">
-          <input type="number" name="vlan_id" class="input-control" placeholder="VLAN ID (10 - 4094)" required style="width:160px;">
+          <input type="number" name="vlan_id" class="input-control" placeholder="Mã VLAN (10 - 4094)" required style="width:165px;">
           <input type="text" name="name" class="input-control" placeholder="Tên VLAN (vd: Phong_Nhan_Su)" required style="width:240px;">
-          <input type="text" name="gateway" class="input-control" placeholder="IP Gateway (vd: 192.168.50.1/24)" required style="width:240px;">
+          <input type="text" name="gateway" class="input-control" placeholder="Cổng mặc định (vd: 192.168.50.1/24)" required style="width:255px;">
           <button type="submit" class="btn btn-primary">+ Thêm VLAN</button>
         </form>
 
@@ -375,9 +583,9 @@
           <table>
             <thead>
               <tr>
-                <th>VLAN ID</th>
+                <th>Mã VLAN</th>
                 <th>Tên phòng ban / Nghiệp vụ</th>
-                <th>Default Gateway (Router R1)</th>
+                <th>Cổng mặc định (Bộ định tuyến R1)</th>
                 <th style="text-align:right;">Thao tác</th>
               </tr>
             </thead>
@@ -400,12 +608,12 @@
       </div>
     </section>
 
-    <!-- PANE 3: CỔNG ACCESS & TRUNK -->
+    <!-- TAB 5: PHÂN BỔ CỔNG ACCESS & TRUNK -->
     <section id="pane-ports" class="pane {{ 'active' if active_tab == 'ports' }}">
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Phân bổ cổng Access &amp; Trunk trên thiết bị (configs/ports.yaml)</div>
+            <div class="card-title">Phân bổ cổng truy cập (Access) &amp; đường trục (Trunk) (configs/ports.yaml)</div>
             <div class="card-sub">Bấm dấu ✕ trên từng thẻ cổng để gỡ bỏ nhanh cổng cấu hình sai</div>
           </div>
         </div>
@@ -417,8 +625,8 @@
             {% endfor %}
           </select>
           <select name="port_type" id="portTypeSelect" class="input-control" onchange="toggleVlanInput()">
-            <option value="access">Access Port</option>
-            <option value="trunk">Trunk Port</option>
+            <option value="access">Cổng truy cập (Access)</option>
+            <option value="trunk">Cổng đường trục (Trunk)</option>
           </select>
           <input type="text" name="interface" class="input-control" placeholder="Tên cổng (vd: Ethernet0/3)" required>
           <select name="vlan" id="vlanSelect" class="input-control">
@@ -433,9 +641,9 @@
           <table>
             <thead>
               <tr>
-                <th style="width:200px;">Thiết bị (Switch IP)</th>
-                <th>Danh sách Cổng Access</th>
-                <th>Danh sách Cổng Trunk</th>
+                <th style="width:200px;">Thiết bị (Địa chỉ IP)</th>
+                <th>Danh sách cổng truy cập (Access)</th>
+                <th>Danh sách cổng đường trục (Trunk)</th>
               </tr>
             </thead>
             <tbody>
@@ -476,31 +684,37 @@
       </div>
     </section>
 
-    <!-- PANE 4: TỰ ĐỘNG HÓA & VALIDATOR -->
+    <!-- TAB 6: TỰ ĐỘNG HÓA & LỊCH SỬ THAO TÁC -->
     <section id="pane-automation" class="pane {{ 'active' if active_tab in ['automation', 'result'] }}">
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Bảng điều khiển Tự động hóa &amp; Kiểm tra lỗi YAML</div>
-            <div class="card-sub">Mọi tác vụ đều đi qua tầng Validator để chặn cấu hình lỗi trước khi mở phiên SSH</div>
+            <div class="card-title">Bảng điều khiển tự động hóa &amp; Kiểm tra lỗi cấu hình</div>
+            <div class="card-sub">Mọi thao tác đều đi qua bộ kiểm tra dữ liệu đầu vào để chặn cấu hình sai trước khi mở kết nối SSH</div>
           </div>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <form action="/action/validate" method="POST">
-            <button class="btn btn-dark" title="Rà soát cú pháp, định dạng IP, tên cổng trên toàn bộ file YAML">1. Kiểm tra dữ liệu đầu vào</button>
+            <button class="btn btn-dark">1. Kiểm tra dữ liệu đầu vào</button>
           </form>
           <form action="/action/dry_run" method="POST">
-            <button class="btn btn-primary" title="Sinh câu lệnh CLI xem trước, không tác động thiết bị">2. Mô phỏng &amp; Xem trước lệnh</button>
+            <button class="btn btn-primary">2. Mô phỏng lệnh (Chạy thử)</button>
           </form>
           <form action="/action/backup" method="POST">
-            <button class="btn btn-outline" title="Sao lưu cấu hình đang chạy về thư mục backups/">3. Sao lưu cấu hình hiện tại</button>
+            <button class="btn btn-outline">3. Sao lưu cấu hình hiện tại</button>
           </form>
           <form action="/action/deploy" method="POST" onsubmit="return confirm('Xác nhận triển khai cấu hình tự động xuống toàn bộ thiết bị EVE-NG?')">
-            <button class="btn btn-success" title="Đẩy cấu hình xuống thiết bị thật qua SSH">4. Triển khai cấu hình tự động</button>
+            <button class="btn btn-success">4. Triển khai cấu hình tự động</button>
           </form>
           <form action="/action/status" method="POST">
-            <button class="btn btn-warning" title="Thu thập và hiển thị trạng thái VLAN, cổng mạng thực tế trên thiết bị">5. Trạng Thái Thực Tế</button>
+            <button class="btn btn-warning">5. Thu thập thông tin thiết bị</button>
+          </form>
+          <form action="/action/compliance" method="POST">
+            <button class="btn btn-primary">6. Kiểm tra tuân thủ cấu hình</button>
+          </form>
+          <form action="/action/port_report" method="POST">
+            <button class="btn btn-dark">7. Xuất báo cáo sử dụng cổng (CSV)</button>
           </form>
         </div>
 
@@ -511,20 +725,65 @@
               <span style="background:#f59e0b;"></span>
               <span style="background:#10b981;"></span>
             </div>
-            <span>console@vlan-manager:~/automation</span>
-            <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:11px;" onclick="copyLog()">Copy Log</button>
+            <span>nhật-ký-hệ-thống@vlan-manager:~/tu-dong-hoa</span>
+            <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:11px;" onclick="copyLog()">Sao chép nhật ký</button>
           </div>
-          <div id="consoleOutput" class="terminal-body {{ 'err' if 'PHÁT HIỆN' in last_output or 'LỖI' in last_output }}">{{ last_output if last_output else 'Sẵn sàng thực thi. Hãy chọn tác vụ [1] Kiểm tra dữ liệu đầu vào hoặc [2] Mô phỏng & Xem trước lệnh...' }}</div>
+          <div id="consoleOutput" class="terminal-body {{ 'err' if 'PHÁT HIỆN' in last_output or 'LỖI' in last_output }}">{{ last_output if last_output else 'Sẵn sàng thực thi. Chọn một thao tác phía trên để bắt đầu...' }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Lịch sử thao tác hệ thống</div>
+            <div class="card-sub">Ghi nhận tự động các thao tác đã chạy, trạng thái kết quả và thời lượng thực thi</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Thao tác thực hiện</th>
+                <th>Trạng thái</th>
+                <th>Tóm tắt kết quả</th>
+                <th>Thời lượng</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              {% if snapshot.operation_history %}
+                {% for h in snapshot.operation_history %}
+                <tr>
+                  <td><code>{{ h.time }}</code></td>
+                  <td><strong>{{ op_vi.get(h.operation, h.operation) }}</strong></td>
+                  <td>
+                    <span class="tag {{ 'tag-online' if h.status in ['SUCCESS', 'PASS'] else ('tag-warn' if h.status == 'PARTIAL' else 'tag-offline') }}">
+                      {{ status_vi.get(h.status, h.status) }}
+                    </span>
+                  </td>
+                  <td>{{ h.summary }}</td>
+                  <td>{{ h.duration }}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="5" style="text-align:center; color:var(--slate-500); padding:20px;">
+                    Chưa có thao tác nào được ghi nhận trong phiên làm việc này.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <!-- PANE 5: BACKUPS -->
+    <!-- TAB 7: BẢN SAO LƯU -->
     <section id="pane-backups" class="pane {{ 'active' if active_tab == 'backups' }}">
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Kho lưu trữ cấu hình thiết bị (backups/)</div>
+            <div class="card-title">Kho lưu trữ bản sao lưu cấu hình (backups/)</div>
             <div class="card-sub">Hiển thị 25 bản sao lưu gần nhất được tạo tự động trước và sau khi triển khai</div>
           </div>
         </div>
@@ -542,14 +801,14 @@
     </section>
   </main>
 
-  <!-- MODAL THÊM / SỬA THIẾT BỊ -->
+  <!-- HỘP THOẠI THÊM / SỬA THIẾT BỊ -->
   <div id="deviceModal" class="modal-overlay">
     <div class="modal-dialog">
       <h3 id="modalTitle">Thêm thiết bị mới</h3>
       <form id="devForm" action="/device/add" method="POST">
         <input type="hidden" name="old_ip" id="fOldIp">
         <div class="form-row">
-          <label>Tên thiết bị (Hostname)</label>
+          <label>Tên thiết bị</label>
           <input type="text" name="name" id="fName" class="input-control" placeholder="SW4" required>
         </div>
         <div class="form-row">
@@ -559,12 +818,12 @@
         <div class="form-row">
           <label>Nền tảng hệ điều hành</label>
           <select name="device_type" id="fType" class="input-control">
-            <option value="cisco_ios">cisco_ios</option>
-            <option value="mikrotik_routeros">mikrotik_routeros</option>
+            <option value="cisco_ios">Cisco IOS (cisco_ios)</option>
+            <option value="mikrotik_routeros">MikroTik RouterOS (mikrotik_routeros)</option>
           </select>
         </div>
         <div class="form-row">
-          <label>Env Prefix (Biến đăng nhập trong .env)</label>
+          <label>Tiền tố biến đăng nhập (.env)</label>
           <input type="text" name="env_prefix" id="fPrefix" class="input-control" placeholder="SW4" required>
         </div>
         <div class="modal-footer">
@@ -576,6 +835,17 @@
   </div>
 
   <script>
+    const STATUS_VI = {
+      'PASS': 'ĐẠT CHUẨN',
+      'FAIL': 'VI PHẠM',
+      'FAIL (Unreachable)': 'MẤT KẾT NỐI',
+      'NOT RUN': 'CHƯA KIỂM TRA',
+      'ERROR': 'LỖI THỰC THI',
+      'SUCCESS': 'THÀNH CÔNG',
+      'PARTIAL': 'ĐẠT MỘT PHẦN',
+      'FAILED': 'THẤT BẠI'
+    };
+
     function switchPane(name, el) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
@@ -628,8 +898,51 @@
     function copyLog() {
       const text = document.getElementById('consoleOutput').innerText;
       navigator.clipboard.writeText(text);
-      alert('Đã sao chép nội dung log vào Clipboard!');
+      alert('Đã sao chép nội dung nhật ký vào bộ nhớ tạm!');
     }
+
+    async function refreshRealtimeState() {
+      try {
+        const res = await fetch('/api/dashboard-state');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('kpiOnline').innerText = `${data.online_devices}/${data.total_devices}`;
+        document.getElementById('kpiOffline').innerText = data.offline_devices;
+        document.getElementById('kpiCompliance').innerText =
+          data.compliance_rate !== null ? `${data.compliance_rate}%` : 'Chưa kiểm tra';
+        document.getElementById('kpiPortUtil').innerText = `${data.port_summary.utilization_pct}%`;
+        document.getElementById('kpiPortDetail').innerText =
+          `Đang dùng ${data.port_summary.used_ports}/${data.port_summary.total_ports} (Còn trống ${data.port_summary.free_ports})`;
+
+        (data.device_states || []).forEach(st => {
+          const statusCell = document.querySelector(`.live-status-cell[data-device="${st.name}"]`);
+          if (statusCell) {
+            statusCell.innerHTML = !st.checked
+              ? '<span class="tag tag-pending">CHƯA QUÉT</span>'
+              : (st.online
+                  ? '<span class="tag tag-online">● TRỰC TUYẾN</span>'
+                  : '<span class="tag tag-offline">● NGOẠI TUYẾN</span>');
+          }
+          const compCell = document.querySelector(`.live-comp-cell[data-device="${st.name}"]`);
+          if (compCell) {
+            const c = st.compliance || 'NOT RUN';
+            const cls = c === 'PASS' ? 'tag-online' : ((c.includes('FAIL') || c === 'ERROR') ? 'tag-offline' : 'tag-pending');
+            const label = STATUS_VI[c] || c;
+            compCell.innerHTML = `<span class="tag ${cls}">${label}</span>`;
+          }
+        });
+
+        document.getElementById('liveClock').innerText =
+          `Bộ điều khiển Lab EVE-NG • Đồng bộ lúc ${new Date().toLocaleTimeString('vi-VN')}`;
+      } catch (e) {}
+    }
+    document.querySelectorAll('.progress-fill[data-pct]').forEach(el => {
+      el.style.width = `${el.dataset.pct}%`;
+    });
+
+    setInterval(refreshRealtimeState, 10000);
+    refreshRealtimeState();
   </script>
 </body>
 </html>

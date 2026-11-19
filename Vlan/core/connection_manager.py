@@ -23,10 +23,22 @@ paramiko.Transport._preferred_kex = tuple(
 class ConnectionManager:
     @staticmethod
     def create_device(dev_cfg: dict):
-        prefix = dev_cfg.get("env_prefix", dev_cfg["name"].upper())
-        username = os.getenv(f"{prefix}_USERNAME", dev_cfg.get("username", "admin"))
-        password = os.getenv(f"{prefix}_PASSWORD", dev_cfg.get("password", "admin123"))
-        secret = os.getenv(f"{prefix}_SECRET", "")
+        prefix = dev_cfg.get("env_prefix", dev_cfg["name"].upper()).strip()
+        username = os.getenv(f"{prefix}_USERNAME", "").strip()
+        password = os.getenv(f"{prefix}_PASSWORD", "").strip()
+        secret = os.getenv(f"{prefix}_SECRET", "").strip()
+
+        missing_vars = []
+        if not username:
+            missing_vars.append(f"{prefix}_USERNAME")
+        if not password:
+            missing_vars.append(f"{prefix}_PASSWORD")
+
+        if missing_vars:
+            raise ValueError(
+                f"Thiếu biến môi trường xác thực cho thiết bị '{dev_cfg['name']}': "
+                f"{', '.join(missing_vars)}. Vui lòng khai báo trong tệp .env (tham khảo .env.example)."
+            )
 
         dtype = dev_cfg["device_type"].lower()
         if dtype == "cisco_ios":
@@ -36,7 +48,7 @@ class ConnectionManager:
                 device_type=dtype,
                 username=username,
                 password=password,
-                secret=secret
+                secret=secret,
             )
         elif dtype == "mikrotik_routeros":
             return MikroTikDevice(
@@ -45,7 +57,7 @@ class ConnectionManager:
                 device_type=dtype,
                 username=username,
                 password=password,
-                secret=secret
+                secret=secret,
             )
         raise ValueError(f"Chưa hỗ trợ device_type: {dtype}")
 

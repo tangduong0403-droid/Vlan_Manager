@@ -1,2 +1,24 @@
-backups/ 
-backups/ 
+# Biến môi trường & thông tin nhạy cảm
+.env
+.env.*
+!.env.example
+
+# Môi trường ảo Python
+venv/
+.venv/
+env/
+
+# Tệp biên dịch tạm & cache của Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Dữ liệu sao lưu cấu hình thiết bị
+backups/
+
+# Cấu hình IDE & Hệ điều hành
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -95,3 +95,11 @@ class NetworkDevice(ABC):
     @abstractmethod
     def check_compliance(self, rules: dict, port_cfg: dict) -> dict:
         pass
+
+    @abstractmethod
+    def collect_facts(self) -> dict:
+        pass
+
+    @abstractmethod
+    def collect_port_utilization(self, port_cfg: dict) -> dict:
+        pass
