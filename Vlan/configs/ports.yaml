@@ -1,34 +1,50 @@
 ports_config:
-  # SW1 - 192.168.239.11 (Core / Aggregation Switch)
-  - switch_ip: "192.168.239.11"
-    access_ports:
-      - interface: "Ethernet0/1"   # Link 05: nối PC4 (VLAN 10)
-        vlan: 10
-    trunk_ports:
-      - "Ethernet0/0"              # Link 03: Trunk nối SW2 (Ethernet0/0)
-      - "Ethernet0/2"              # Link 02: Trunk nối R1 - MikroTik (ether1)
-
-  # SW2 - 192.168.239.12 (Distribution Switch)
-  - switch_ip: "192.168.239.12"
-    access_ports:
-      - interface: "Ethernet0/2"   # Link 06: nối PC5 (VLAN 20)
-        vlan: 20
-    trunk_ports:
-      - "Ethernet0/0"              # Link 03: Trunk nối SW1 (Ethernet0/0)
-      - "Ethernet0/1"              # Link 04: Trunk nối SW3 (Ethernet0/0)
-
-  # SW3 - 192.168.239.13 (Access Switch)
-  - switch_ip: "192.168.239.13"
-    access_ports:
-      - interface: "Ethernet0/1"   # Link 07: nối PC6 (VLAN 30)
-        vlan: 30
-      - interface: "Ethernet0/2"   # Link 08: nối PC7 (VLAN 40)
-        vlan: 40
-    trunk_ports:
-      - "Ethernet0/0"              # Link 04: Trunk nối SW2 (Ethernet0/1)
-
-  # R1 - 192.168.239.14 (MikroTik RouterOS - Inter-VLAN Routing)
-  - switch_ip: "192.168.239.14"
-    access_ports: []
-    trunk_ports:
-      - "ether1"                   # Link 02: Trunk (802.1Q) nối SW1 (Ethernet0/2)
+- switch_ip: 192.168.207.11
+  access_ports: []
+  trunk_ports:
+  - Ethernet0/0
+  - Ethernet0/1
+  - Ethernet0/2
+- switch_ip: 192.168.207.12
+  access_ports:
+  - interface: Ethernet0/1
+    vlan: 10
+  - interface: Ethernet0/2
+    vlan: 20
+  trunk_ports:
+  - Ethernet0/0
+- switch_ip: 192.168.207.13
+  access_ports:
+  - interface: Ethernet0/1
+    vlan: 10
+  - interface: Ethernet0/2
+    vlan: 20
+  trunk_ports:
+  - Ethernet0/0
+- switch_ip: 192.168.207.14
+  access_ports:
+  - interface: ether2
+    vlan: 30
+  - interface: ether3
+    vlan: 30
+  trunk_ports:
+  - ether1
+links:
+- from:
+    ip: 192.168.207.11
+    port: Ethernet0/0
+  to:
+    ip: 192.168.207.12
+    port: Ethernet0/0
+- from:
+    ip: 192.168.207.11
+    port: Ethernet0/1
+  to:
+    ip: 192.168.207.13
+    port: Ethernet0/0
+- from:
+    ip: 192.168.207.11
+    port: Ethernet0/2
+  to:
+    ip: 192.168.207.14
+    port: ether1

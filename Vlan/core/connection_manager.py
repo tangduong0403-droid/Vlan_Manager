@@ -24,9 +24,17 @@ class ConnectionManager:
     @staticmethod
     def create_device(dev_cfg: dict):
         prefix = dev_cfg.get("env_prefix", dev_cfg["name"].upper()).strip()
-        username = os.getenv(f"{prefix}_USERNAME", "").strip()
-        password = os.getenv(f"{prefix}_PASSWORD", "").strip()
-        secret = os.getenv(f"{prefix}_SECRET", "").strip()
+        username = (
+            os.getenv(f"{prefix}_USERNAME")
+            or os.getenv(f"{prefix}_USER")
+            or ""
+        ).strip()
+        password = (
+            os.getenv(f"{prefix}_PASSWORD")
+            or os.getenv(f"{prefix}_PASS")
+            or ""
+        ).strip()
+        secret = (os.getenv(f"{prefix}_SECRET") or password).strip()
 
         missing_vars = []
         if not username:
@@ -37,7 +45,7 @@ class ConnectionManager:
         if missing_vars:
             raise ValueError(
                 f"Thiếu biến môi trường xác thực cho thiết bị '{dev_cfg['name']}': "
-                f"{', '.join(missing_vars)}. Vui lòng khai báo trong tệp .env (tham khảo .env.example)."
+                f"{', '.join(missing_vars)}. Vui lòng khai báo trong tệp .env."
             )
 
         dtype = dev_cfg["device_type"].lower()

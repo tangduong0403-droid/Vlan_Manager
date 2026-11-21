@@ -1,0 +1,5 @@
+﻿Device,IP,Device Type,Online,OS Version,Uptime,CPU,RAM,Ports Summary,Routes Count,ARP Entries,MAC Entries,Collected At,Error
+SW1,192.168.207.11,cisco_ios,ONLINE,Cisco IOS 15.2(CML_NIGHTLY_20190423)FLO_DSGS7,"1 hour, 21 minutes",5s: 0%/0% | 1m: 0% | 5m: 0%,5.9% (52/899 MB),8/8 UP,4,2,9,2026-11-21 10:59:13,
+SW2,192.168.207.12,cisco_ios,ONLINE,Cisco IOS 15.2(CML_NIGHTLY_20190423)FLO_DSGS7,"1 hour, 21 minutes",5s: 0%/0% | 1m: 0% | 5m: 0%,5.9% (52/899 MB),8/8 UP,4,2,9,2026-11-21 10:59:13,
+SW3,192.168.207.13,cisco_ios,ONLINE,Cisco IOS 15.2(CML_NIGHTLY_20190423)FLO_DSGS7,"1 hour, 21 minutes",5s: 0%/0% | 1m: 0% | 5m: 0%,5.9% (52/899 MB),8/8 UP,4,2,9,2026-11-21 10:59:13,
+SW4,192.168.207.14,mikrotik_routeros,ONLINE,RouterOS 7.16.2 (stable),1h21m2s,1%,21.7% (222.3/1024.0 MB),4/4 UP,4,3,0,2026-11-21 10:59:12,
