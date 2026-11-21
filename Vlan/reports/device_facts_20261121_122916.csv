@@ -1,5 +1,0 @@
-﻿Device,IP,Device Type,Online,OS Version,Uptime,CPU,RAM,Ports Summary,Routes Count,ARP Entries,MAC Entries,Collected At,Error
-SW1,192.168.207.11,cisco_ios,OFFLINE,N/A,N/A,N/A,N/A,0/0 UP,0,0,0,2026-11-21 12:29:16,TCP connection to device failed.
-SW2,192.168.207.12,cisco_ios,OFFLINE,N/A,N/A,N/A,N/A,0/0 UP,0,0,0,2026-11-21 12:29:16,TCP connection to device failed.
-SW3,192.168.207.13,cisco_ios,OFFLINE,N/A,N/A,N/A,N/A,0/0 UP,0,0,0,2026-11-21 12:29:16,TCP connection to device failed.
-SW4,192.168.207.14,mikrotik_routeros,OFFLINE,N/A,N/A,N/A,N/A,0/0 UP,0,0,0,2026-11-21 12:29:16,TCP connection to device failed.

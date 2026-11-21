@@ -1,6 +1,0 @@
-﻿Device,IP,Device Type,Status,Total Ports,Used Ports,Free Ports,Utilization (%),Access Ports,Trunk Ports,Used Port List,Free Port List,Collected At,Error
-SW1,192.168.239.11,cisco_ios,ONLINE,8,4,4,50.0,1,2,"Et0/0, Et0/1, Et0/2, Et0/3","Et1/0, Et1/1, Et1/2, Et1/3",2026-11-19 17:26:12,
-SW2,192.168.239.12,cisco_ios,ONLINE,8,3,5,37.5,1,2,"Et0/0, Et0/1, Et0/2","Et0/3, Et1/0, Et1/1, Et1/2, Et1/3",2026-11-19 17:26:12,
-SW3,192.168.239.13,cisco_ios,ONLINE,8,3,5,37.5,2,1,"Et0/0, Et0/1, Et0/2","Et0/3, Et1/0, Et1/1, Et1/2, Et1/3",2026-11-19 17:26:12,
-R1,192.168.239.14,mikrotik_routeros,ONLINE,4,1,3,25.0,0,1,ether1,"ether2, ether3, ether4",2026-11-19 17:26:12,
-TOTAL (CAMPUS),-,Multi-Vendor,4/4 ONLINE,28,11,17,39.3,4,6,-,-,2026-11-19 17:26:14,
