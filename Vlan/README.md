@@ -138,8 +138,8 @@ SW3_USERNAME=lab_admin
 SW3_PASSWORD=mat_khau_thuc_te
 SW3_SECRET=enable_secret_thuc_te
 
-R1_USERNAME=lab_admin
-R1_PASSWORD=mat_khau_thuc_te
+SW4_USERNAME=lab_admin
+SW4_PASSWORD=mat_khau_thuc_te
 
 FLASK_SECRET_KEY=doi_thanh_chuoi_ngau_nhien_va_bao_mat
 ```
