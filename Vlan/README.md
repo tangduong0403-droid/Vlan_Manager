@@ -234,6 +234,24 @@ Menu CLI gồm:
 
 Mọi lựa chọn chạy thao tác thiết bị đều chạy kiểm tra YAML trước. Nếu file cấu hình lỗi, chương trình không thực hiện thao tác thiết bị.
 
+## Chạy kiểm thử
+
+Từ thư mục `Vlan`, kích hoạt môi trường ảo rồi chạy:
+
+```powershell
+python -X utf8 -m unittest discover -s tests -v
+```
+
+Tùy chọn `-X utf8` giúp hiển thị thông báo tiếng Việt ổn định trong terminal Windows. Bộ kiểm thử dùng `unittest` có sẵn trong Python, không cần cài thêm thư viện test và không kết nối hay thay đổi cấu hình thiết bị thật. Các ca kiểm thử bao gồm:
+
+- Kiểm tra bộ YAML hiện có trong `configs/`.
+- Chấp nhận topology hợp lệ kết hợp Cisco IOS và MikroTik RouterOS.
+- Phát hiện cổng quản trị `mgmt_uplink` bị gán làm cổng Access.
+- Phát hiện thiết bị bị cô lập và liên kết Trunk bất đối xứng.
+- Từ chối file YAML sai cú pháp.
+
+Lệnh trả về mã thoát khác `0` nếu có kiểm thử thất bại.
+
 ## Quy trình sử dụng khuyến nghị
 
 1. Khởi động lab và xác nhận máy chạy ứng dụng có thể SSH đến mọi IP trong inventory.
@@ -301,6 +319,8 @@ Vlan/
 │   ├── vlans.yaml
 │   ├── ports.yaml
 │   └── compliance_rules.yaml
+├── tests/
+│   └── test_validator.py  # Kiểm thử tự động cho bộ kiểm định YAML
 ├── core/                  # Kết nối, thiết bị và điều phối triển khai
 ├── devices/               # Xử lý Cisco IOS và MikroTik RouterOS
 ├── modules/               # Deploy, backup, diff, rollback, compliance, báo cáo
