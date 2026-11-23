@@ -267,14 +267,13 @@ Ví dụ cấu hình hiện tại của dự án:
 | SW1 | `192.168.239.11` | Cisco IOS |
 | SW2 | `192.168.239.12` | Cisco IOS |
 | SW3 | `192.168.239.13` | Cisco IOS |
-| R1 | `192.168.239.14` | MikroTik RouterOS |
+| SW4 | `192.168.239.14` | MikroTik RouterOS |
 
 | VLAN | Tên | Gateway |
 |---:|---|---|
 | 10 | `Phong_Dao_Tao` | `192.168.10.1/24` |
 | 20 | `Phong_Ke_Toan` | `192.168.20.1/24` |
 | 30 | `Phong_Quan_Tri` | `192.168.30.1/24` |
-| 40 | `Phong_IT` | `192.168.40.1/24` |
 
 Điều chỉnh các giá trị này để khớp thiết bị và topology thực tế. Sau khi đổi file, có thể chạy lại giao diện; các endpoint lưu cấu hình cũng tự tải lại dữ liệu.
 
